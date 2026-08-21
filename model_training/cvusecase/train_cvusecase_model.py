@@ -119,6 +119,11 @@ def main():
 
     print("Training data (clean):", train_data.samples, "samples; validation:", validation_data.samples)
 
+    if train_data.samples == 0:
+        raise SystemExit("No training images found under <data_path>/train. Build dataset first.")
+    if validation_data.samples == 0:
+        raise SystemExit("No validation images found under <data_path>/valid. Build dataset first.")
+
     # ---- deliberately LEAN architecture (reduced capacity => underfit) -------
     # far fewer parameters than the repo's high-accuracy model
     model = keras.Sequential()
@@ -154,11 +159,14 @@ def main():
 
     lr_callback = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=2, min_lr=1e-5)
 
+    train_steps = max(1, len(train_data))
+    valid_steps = max(1, len(validation_data))
+
     model.fit(train_data,
               validation_data=validation_data,
               epochs=cfg["epochs"],
-              steps_per_epoch=train_data.samples // BATCH_SIZE,
-              validation_steps=validation_data.samples // BATCH_SIZE,
+              steps_per_epoch=train_steps,
+              validation_steps=valid_steps,
               callbacks=[lr_callback, cp_callback])
 
     print("\nTraining complete. Checkpoints in", os.path.dirname(model_out))

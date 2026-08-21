@@ -34,6 +34,16 @@ python -m pip install -r model_training/cvusecase/requirements_cvusecase.txt
 - `<id>.json`
     Here u create a folder and dump all the images in that folder and this is your <PATH_TO_BLENDER_SOURCE>
 
+    Default input path is set as ../blender_source relative to that script.
+    So if you run it without arguments, it will look for:
+
+    model_training/blender_source
+
+    
+    You can override this anytime with:
+
+    --source-dir <your_folder_path>
+
 2) Build dataset:
 
 ```powershell

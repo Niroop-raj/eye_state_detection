@@ -1,0 +1,72 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+type: command
+
+display_name: eyecare-cvusecase-full
+experiment_name: eyecare-cvusecase
+
+description: >
+  End-to-end cv use-case flow.
+  Builds the cvusecase dataset from Blender source,
+  Trains the chosen model, evaluates it, and writes
+  machine-readable plus human-readable outputs.
+
+  Required input:
+    - blender_source_path -> folder containing matching <id>.png + <id>.json pairs
+  Main controls:
+    - job_mode: full | train | eval
+    - target_acc_low / target_acc_high: optional evaluation target band
+      using threshold fitting on the validation split.
+
+  Run examples (after filling the placeholders marked FILL):
+    # train + evaluate model, write JSON + report
+    az ml job create -f job_cvusecase_full.yaml
+
+    # evaluate existing chosen low model while forcing target-accuracy range
+    --set inputs.job_mode=eval \
+      inputs.target_acc_low=0.80 inputs.target_acc_high=0.85
+
+code: ..
+
+environment:
+  image: mcr.microsoft.com/azureml/openmpi4.1.0-cuda11.8-cudnn8-ubuntu22.04
+
+compute: azureml:value-engineering-T4
+
+command: >-
+  python -m pip install -r model_training/cvusecase/requirements_cvusecase.txt &&
+  python -u model_training/cvusecase/build_cvusecase_dataset.py
+  --source-dir ${{inputs.blender_source_path}}
+  --out-dir ${{outputs.output_stream}}/cvusecase_dataset &&
+  python -u model_training/cvusecase/run_cvusecase_flow.py
+  --mode ${{inputs.job_mode}}
+  --data ${{outputs.output_stream}}/cvusecase_dataset
+  --output ${{outputs.output_stream}}
+  --model ${{outputs.output_stream}}/${{inputs.model_name}}
+  --json ${{outputs.output_stream}}/eval_metrics.json
+  --report ${{outputs.output_stream}}/report.txt
+  --target_acc_low ${{inputs.target_acc_low}}
+  --target_acc_high ${{inputs.target_acc_high}}
+
+inputs:
+  blender_source_path:
+    type: uri_folder
+    path: azureml://datastores/workspaceblobstore/paths/REPLACE_WITH_BLENDER_SOURCE/
+    mode: ro_mount
+  job_mode:
+    type: string
+    default: "full"
+    enum: ["full", "train", "eval"]
+  model_name:
+    type: string
+    default: "cvusecase_best.hdf5"
+  target_acc_low:
+    type: string
+    default: ""
+  target_acc_high:
+    type: string
+    default: ""
+
+outputs:
+  output_stream:
+    type: uri_folder
+    mode: upload

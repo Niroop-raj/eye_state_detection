@@ -1,0 +1,41 @@
+# --- virtualenv / python ---
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.pyc
+
+# --- IDE / OS ---
+.vscode/
+.idea/
+*.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
+*.log
+
+# --- large generated / source data ---
+model_training/blender_source/
+model_training/cvusecase_dataset/
+model_training/cvusecase/model_shapes_report.txt
+model_training/cvusecase/cvusecase_outputs/
+model_training/cvusecase/checkpoints_cvusecase/
+model_training/trained_models/
+model_training/docs/
+
+# generated metrics / reports
+**/eval_metrics*.json
+**/report*.txt
+**/architecture_comparison*.txt
+**/model_shapes_report*.txt
+
+# --- azureml / dtos temp artifacts ---
+*.samples-cli/
+.nbi/
+dm_logs/
+
+# model files outside ignored folders are kept by default.
+# generated checkpoint folders above remain ignored.
+!*.hdf5
+!*.h5
+!*.hdf
+!*.onnx

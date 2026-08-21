@@ -1,0 +1,13 @@
+# TensorFlow in this project currently supports Python 3.10-3.11 on Windows.
+numpy<2
+scipy<1.12
+opencv-python
+pyaudio
+pillow
+darkdetect
+keras==2.15.0
+tensorflow==2.15.1
+dlib
+playsound
+customtkinter==5.2.2
+keras2ascii

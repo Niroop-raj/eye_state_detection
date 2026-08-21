@@ -1,0 +1,14 @@
+# Minimal dependencies for the fine-tuning pipeline only.
+# (No playsound / dlib / keras2ascii / app-UI stuff needed here.)
+#
+# Python 3.11 required (tensorflow 2.15 supports 3.9-3.11 only).
+#
+# Usage (inside the activated venv):
+#     pip install -r requirements_cvusecase.txt
+
+tensorflow==2.15.1
+keras==2.15.0
+numpy<2
+scipy<1.12
+opencv-python
+pillow
